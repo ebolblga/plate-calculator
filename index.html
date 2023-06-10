@@ -35,10 +35,11 @@
       
       let half = (maxWeight - minWeight - barbellWeight) / 2;
       let output = [];
+      output.push(half);
 
       while (half >= precision) {
-        output.push(half);
         half /= 2;
+        output.push(half);
       }
 
       document.getElementById("plates").value = "";
@@ -46,7 +47,8 @@
         document.getElementById("plates").value += element + "kg x2,\t";
       });
 
-      document.getElementById("amount").value = output.length * 2;
+      document.getElementById("plates").value = document.getElementById("plates").value.slice(0, -2);
+      document.getElementById("amount").value = output.length * 2;      
     }
   </script>
 </body>
