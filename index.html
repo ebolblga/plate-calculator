@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Weight Calculator</title>
+</head>
+<body>
+  <h2>Calculator for minimum amount of weight plates needed to get any value in a given range and precision.</h2>
+  
+  <label for="max-weight">Max weight, kg:</label>
+  <input type="number" id="max-weight" name="max-weight" value="168"><br><br>
+  
+  <label for="min-weight">Min weight, kg:</label>
+  <input type="number" id="min-weight" name="min-weight" value="20"><br><br>
+  
+  <label for="barbell-weight">Barbell weight, kg:</label>
+  <input type="number" id="barbell-weight" name="barbell-weight" value="20"><br><br>
+  
+  <label for="precision">Precision, kg:</label>
+  <input type="number" id="precision" name="precision" value="1"><br><br>
+  
+  <button onclick="calculateTotal()">Calculate</button><br><br>
+  
+  <label for="plates">Plates needed:</label>
+  <input type="text" id="plates" name="plates" style="width: 90vw;" readonly><br><br>
+
+  <label for="amount">Amount of plates:</label>
+  <input type="text" id="amount" name="amount" readonly><br><br>
+  
+  <script>
+    function calculateTotal() {
+      const maxWeight = parseFloat(document.getElementById("max-weight").value);
+      const minWeight = parseFloat(document.getElementById("min-weight").value);
+      const barbellWeight = parseFloat(document.getElementById("barbell-weight").value);
+      const precision = parseFloat(document.getElementById("precision").value);
+      
+      let half = (maxWeight - minWeight - barbellWeight) / 2;
+      let output = [];
+
+      while (half >= precision) {
+        output.push(half);
+        half /= 2;
+      }
+
+      document.getElementById("plates").value = "";
+      output.forEach(element => {
+        document.getElementById("plates").value += element + "kg x2,\t";
+      });
+
+      document.getElementById("amount").value = output.length * 2;
+    }
+  </script>
+</body>
+</html>
