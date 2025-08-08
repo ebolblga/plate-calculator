@@ -9,16 +9,18 @@ Great example: [https://youtu.be/um4sVgB4Qmc](https://youtu.be/um4sVgB4Qmc)
     <img src="https://img.youtube.com/vi/um4sVgB4Qmc/0.jpg" alt="Тренажерный зал своими руками Сергея Фролова">
   </a>
 </p>
-<iframe
-  width="700"
-  height="394"
-  src="https://www.youtube.com/embed/um4sVgB4Qmc"
-  title="Тренажерный зал своими руками Сергея Фролова"
-  frameborder="0"
-  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; modestbranding=1"
-  referrerpolicy="strict-origin-when-cross-origin"
-  allowfullscreen>
-</iframe>
+<!-- <div style="display: flex; justify-content: center;">
+  <iframe
+    width="700"
+    height="394"
+    src="https://www.youtube.com/embed/um4sVgB4Qmc"
+    title="Тренажерный зал своими руками Сергея Фролова"
+    frameborder="0"
+    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; modestbranding=1"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen>
+  </iframe>
+</div> -->
 
 ![plate-calculator user interface](/app/assets/plate_calculator_interface.webp)
 
