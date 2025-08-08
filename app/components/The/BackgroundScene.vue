@@ -1,12 +1,8 @@
 <script setup lang="ts">
-// import { ChromaticAberrationShader } from 'three/examples/jsm/shaders/ChromaticAberrationShader.js'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
-import { RGBShiftShader } from 'three/examples/jsm/shaders/RGBShiftShader.js'
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
-import { VignetteShader } from 'three/examples/jsm/shaders/VignetteShader.js'
 import * as THREE from 'three'
 import type { Result } from '@types'
 
@@ -20,6 +16,7 @@ let camera: THREE.PerspectiveCamera
 let renderer: THREE.WebGLRenderer
 let controls: OrbitControls
 let plateGroup: THREE.Group // group that will hold stack of plates
+let labelGroup: THREE.Group // group that will hold weight labels
 let composer: EffectComposer
 let frameId: number // for cancelAnimationFrame
 
@@ -29,6 +26,9 @@ function initScene() {
     scene.background = new THREE.Color(0x282828)
     plateGroup = new THREE.Group()
     scene.add(plateGroup)
+
+    labelGroup = new THREE.Group()
+    scene.add(labelGroup)
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.6))
     const dir = new THREE.DirectionalLight(0xffffff, 1)
@@ -82,16 +82,6 @@ function initPostProcessing() {
         0.6
     )
     composer.addPass(bloom)
-
-    // const rgbPass = new ShaderPass(RGBShiftShader)
-    // ;(rgbPass.uniforms as Record<string, any>)['amount'].value = 0.0015
-    // ;(rgbPass.uniforms as Record<string, any>)['angle'].value = Math.PI / 4
-    // composer.addPass(rgbPass)
-
-    // const vigPass = new ShaderPass(VignetteShader)
-    // ;(vigPass.uniforms as Record<string, any>)['offset'].value = 1
-    // ;(vigPass.uniforms as Record<string, any>)['darkness'].value = 1.01
-    // composer.addPass(vigPass)
 }
 
 // Rotate and zoom logic
@@ -104,6 +94,45 @@ function initControls() {
     controls.minDistance = 1
     controls.maxDistance = 4
     controls.rotateSpeed = 0.8
+}
+
+// Creates a text label sprite that always faces the camera
+function createTextLabel(text: string): THREE.Sprite {
+    // Create a canvas to render text
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')!
+
+    // Set canvas size
+    canvas.width = 128
+    canvas.height = 64
+
+    // Configure text style
+    context.font = '600 24px Inter, sans-serif'
+    context.fillStyle = '#f4e3e3'
+    context.textAlign = 'center'
+    context.textBaseline = 'middle'
+
+    // Clear canvas
+    context.clearRect(0, 0, canvas.width, canvas.height)
+
+    // Draw text
+    context.fillText(text, canvas.width / 2, canvas.height / 2)
+
+    // Create texture from canvas
+    const texture = new THREE.CanvasTexture(canvas)
+    texture.needsUpdate = true
+
+    // Create sprite material
+    const material = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true
+    })
+
+    // Create and configure sprite
+    const sprite = new THREE.Sprite(material)
+    sprite.scale.set(0.12, 0.06, 1)
+
+    return sprite
 }
 
 // Builds stack of weight plates
@@ -139,6 +168,20 @@ function loadPlates() {
         mesh.position.y = yOffset + plate.height / 2
 
         plateGroup.add(mesh)
+
+        // Create and position weight label
+        const weightText = `${plate.weight}${props.result.unitOfWeight}`
+        const label = createTextLabel(weightText)
+
+        // Position label next to the plate
+        label.position.set(
+            plate.outerDiameter / 2 + 0.15,
+            yOffset + plate.height / 2,
+            0
+        )
+
+        labelGroup.add(label)
+
         yOffset += plate.height + plateSpacing
     }
 }
@@ -153,6 +196,16 @@ function clearPlates() {
             const mat = (child as THREE.Mesh).material
             if (Array.isArray(mat)) mat.forEach((m) => m.dispose())
             else mat.dispose()
+        }
+    }
+
+    // Remove all previous labels
+    while (labelGroup.children.length) {
+        const child = labelGroup.children.pop()!
+        if ((child as THREE.Sprite).material) {
+            const mat = (child as THREE.Sprite).material as THREE.SpriteMaterial
+            if (mat.map) mat.map.dispose()
+            mat.dispose()
         }
     }
 }
