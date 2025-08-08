@@ -10,5 +10,6 @@ export interface Result {
     unitOfWeight: 'kg' | 'lb'
     unitOfLength: 'm' | 'inch'
     numPlates: number
+    totalWeight: number
     plateDenoms: PlateObject[]
 }

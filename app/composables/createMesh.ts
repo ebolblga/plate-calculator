@@ -6,7 +6,6 @@ export function createPlateMesh(plate: PlateObject): THREE.Mesh {
         innerDiameter,
         outerDiameter,
         height,
-        weight, // if you want to color-code by weight
     } = plate
 
     const outerRadius = outerDiameter / 2

@@ -9,6 +9,20 @@ Great example: [https://youtu.be/um4sVgB4Qmc](https://youtu.be/um4sVgB4Qmc)
     <img src="https://img.youtube.com/vi/um4sVgB4Qmc/0.jpg" alt="Тренажерный зал своими руками Сергея Фролова">
   </a>
 </p>
+<div style="display: flex; justify-content: center;">
+  <iframe
+    width="700"
+    height="394"
+    src="https://www.youtube.com/embed/um4sVgB4Qmc"
+    title="Тренажерный зал своими руками Сергея Фролова"
+    frameborder="0"
+    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; modestbranding=1"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen>
+  </iframe>
+</div>
+
+![plate-calculator user interface](/app/assets/plate_calculator_interface.webp)
 
 ## Problem Statement
 **Given:**
@@ -21,7 +35,7 @@ Great example: [https://youtu.be/um4sVgB4Qmc](https://youtu.be/um4sVgB4Qmc)
 
 Find the smallest set S of plate weight denominations (each is used in pairs) so that, for every target total weight W in the arithmetic sequence:
 
-```text
+```ini
 minWeight, minWeight + precision, minWeight + 2 * precision, ..., ≤ maxWeight
 ```
 
@@ -87,6 +101,77 @@ In this problem you minimize the number of coins used, not number of denominatio
 Source: [Wikipedia](https://en.wikipedia.org/wiki/Postage_stamp_problem)
 
 In this problem you find all possible sums from already given set of denominations.
+
+## 3D rendering
+I didn't want to leave it at a simple array of weights, I wanted this website to work as a tool that would provide all needed information for making those weight plates in real life.
+
+### 1. Get plate dimensions
+Goal: for each plate weight `w` compute it's dimensions with:
+- `innerDiameter` (m) — the bar hole
+- `outerDiameter` (m)
+- `height` (m) — thickness
+
+We work entirely in SI (`kg`, `m`, `kg/m^3`).
+
+High-level rules:
+- try to use a standard Olympic outer diameter (OD) when it yields a `thickness ≥ MIN_HEIGHT`.
+- if thickness at standard OD would be too small, compute the OD that gives exactly `MIN_HEIGHT`.
+- clamp the computed OD into a practical range `[MIN_OD, MAX_OD]`.
+- recompute actual thickness from the clamped OD; if the clamped OD still produces thickness below `MIN_HEIGHT`, we set thickness = `MIN_HEIGHT` (you’ll have to accept an OD at the clamp limit).
+
+This ensures plates are not thinner than a manufacturable minimum, while keeping large plates at a standard size.
+
+**Constants**
+- `DENSITY` — concrete density (typical): **2400 kg/m^3**
+- `INNER_DIAMETER` — Olympic sleeve hole: **0.0504 m** (50.4 mm)
+- `STANDARD_OD` — typical big-plate OD: **0.45 m** (450 mm)
+- `MIN_HEIGHT` — minimal safe thickness for concrete plate: **0.02 m** (20 mm)
+- `MIN_OD` — smallest reasonable outer diameter for a plate: **0.15 m** (150 mm)
+- `MAX_OD` — practical upper bound: **0.5 m** (500 mm)
+
+You can change these constants to match your materials, additives, or shop constraints in the code.
+
+**Formulas**
+
+Volume of a plate required for a weight `w`:
+```ini
+V = w / ρ
+```
+where `ρ` is `DENSITY` (kg/m^3), `V` in m^3.
+
+Plate is a cylindrical ring (thickness `h`, outer radius `R`, inner radius `r`):
+```ini
+V = π * h * (R^2 - r^2)
+```
+
+Solve for thickness `h` given `R`:
+```ini
+h = V / (π * (R^2 - r^2))
+```
+
+If we want `h = MIN_HEIGHT`, we can solve for the required outer radius `R_req`:
+```ini
+R_req = sqrt( V / (π * MIN_HEIGHT) + r^2 )
+od_req = 2 * R_req
+```
+
+Then clamp:
+```ini
+od = clamp(od_req, MIN_OD, MAX_OD)
+```
+
+Finally compute the actual height for the chosen `od`:
+```ini
+R = od / 2
+h = V / (π * (R^2 - r^2))
+```
+
+### 2. Rendering weight plates with Tree.js
+For that I used [Tree.js](https://threejs.org/) - JavaScript-based WebGL engine. Render loop is pretty simple:
+- generate meshes (from curves and extrusions)
+- initialize scene with ambient and directional lights
+- initialize camera with an offset, so the stack of plates is on the right side of the screen
+- and then some controls and post processing like bloom
 
 ## Setup with [Node.js](https://nodejs.org/en/)
 If you want to try changing the mapping

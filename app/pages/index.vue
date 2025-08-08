@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { getBinaryDenoms, getCoverDenoms } from '~/composables/searchAlgorithm'
 import { genPlateObjects } from '~/composables/generatePlates'
+import { getBinaryDenoms, getCoverDenoms } from '~/composables/searchAlgorithm'
 import { useLocalStorage } from '@vueuse/core'
 import type { Result } from '@types'
 
@@ -42,83 +42,81 @@ function findPlateDenoms(heuristic: boolean = false): void {
 
     plateDenoms.value = plateDenominations
     const plateObjects = genPlateObjects(plateDenominations)
-    // console.log('Answer validation: ', validateAnswer(plateDenominations))
-    // console.log('Plates: ', plateObjects)
 
     result.value = {
         unitOfWeight: 'kg',
         unitOfLength: 'm',
         numPlates: plateDenominations.length * 2,
+        totalWeight:
+            plateDenominations.reduce(
+                (accumulator, currentValue) => accumulator + currentValue,
+                0
+            ) * 2,
         plateDenoms: plateObjects,
     }
 }
 
-function validateAnswer(nums: number[] = plateDenoms.value): number[] {
-    const result = new Set<number>()
-
-    const dfs = (index: number, currentSum: number) => {
-        if (index === nums.length) {
-            result.add(currentSum * 2 + minWeight.value)
-            return
-        }
-
-        // @ts-ignore
-        dfs(index + 1, currentSum + nums[index])
-
-        // Exclude nums[index]
-        dfs(index + 1, currentSum)
-    }
-
-    dfs(0, 0)
-
-    return Array.from(result).sort((a, b) => a - b)
+function exportJson() {
+    const data = result.value
+    const json = JSON.stringify(data, null, 2)
+    const blob = new Blob([json], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'plate_data.json'
+    a.click()
+    URL.revokeObjectURL(url)
 }
 </script>
 <template>
     <TheBackgroundScene :result="result" />
-    <div class="p-3 absolute top-0 left-0 z-20 select-none w-1/2 form">
-        <p class="text-2xl font-bold">[Work in progress] plate-calculator</p>
+    <div class="p-3 absolute top-0 left-0 z-20 select-none w-1/2">
+        <p class="text-2xl font-bold">[WIP] plate-calculator</p>
         <p>
             Calculator for minimum amount of weight plates needed to get any
-            value in a given range and precision
+            value in a given range and precision (best viewed on desktop)
         </p>
         <nav class="mt-3 mb-6 text-accent">
             <NuxtLink to="/about">{{ '<- About this project' }}</NuxtLink>
         </nav>
-        <BaseSlider
-            class="pointer-events-auto"
-            v-model="minWeight"
-            :min="0"
-            :max="1023"
-            :step="1"
-            label="Min weight, kg:"
-            id="min-weight" />
-        <BaseSlider
-            class="pointer-events-auto"
-            v-model="maxWeight"
-            :min="1"
-            :max="1023"
-            :step="1"
-            label="Max weight, kg:"
-            id="max-weight" />
-        <BaseSlider
-            class="pointer-events-auto"
-            v-model="precision"
-            :min="0.25"
-            :max="40"
-            :step="0.25"
-            label="Precision, kg:"
-            id="precision" />
-        <section class="w-full mt-6 flex flex-row gap-x-4">
+        <section class="h-[150px]">
+            <client-only>
+                <BaseSlider
+                    v-model="minWeight"
+                    :min="0"
+                    :max="1023"
+                    :step="1"
+                    label="Min weight, kg:"
+                    id="min-weight" />
+                <BaseSlider
+                    v-model="maxWeight"
+                    :min="1"
+                    :max="1023"
+                    :step="1"
+                    label="Max weight, kg:"
+                    id="max-weight" />
+                <BaseSlider
+                    v-model="precision"
+                    :min="0.25"
+                    :max="40"
+                    :step="0.25"
+                    label="Precision, kg:"
+                    id="precision" />
+            </client-only>
+        </section>
+        <section class="w-full mt-6 flex flex-row gap-x-1">
             <BaseButton
                 @click="findPlateDenoms()"
-                class="w-1/2 pointer-events-auto">
+                class="w-1/3">
                 Greedy Subset-Sum Cover algorithm
             </BaseButton>
             <BaseButton
                 @click="findPlateDenoms(true)"
-                class="w-1/2 pointer-events-auto">
+                class="w-1/3">
                 Binary heuristic
+            </BaseButton>
+            <BaseButton @click="exportJson" class="w-1/3">
+                Download JSON with dimensions
             </BaseButton>
         </section>
         <section>
@@ -129,13 +127,12 @@ function validateAnswer(nums: number[] = plateDenoms.value): number[] {
                 <p>
                     Total number of weight plates: {{ plateDenoms.length * 2 }}
                 </p>
+                <p>
+                    Total weight, kg:
+                    {{ plateDenoms.reduce((acc, curr) => acc + curr, 0) * 2 }}
+                </p>
                 <!-- <pre v-if="result">{{ JSON.stringify(result, null, 2) }}</pre> -->
             </client-only>
         </section>
     </div>
 </template>
-<style>
-.form {
-    background-color: transparent;
-}
-</style>

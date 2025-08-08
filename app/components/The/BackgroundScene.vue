@@ -1,14 +1,14 @@
 <script setup lang="ts">
+// import { ChromaticAberrationShader } from 'three/examples/jsm/shaders/ChromaticAberrationShader.js'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+import { RGBShiftShader } from 'three/examples/jsm/shaders/RGBShiftShader.js'
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
+import { VignetteShader } from 'three/examples/jsm/shaders/VignetteShader.js'
 import * as THREE from 'three'
 import type { Result } from '@types'
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
-import { VignetteShader } from 'three/examples/jsm/shaders/VignetteShader.js'
-// import { ChromaticAberrationShader } from 'three/examples/jsm/shaders/ChromaticAberrationShader.js'
-import { RGBShiftShader } from 'three/examples/jsm/shaders/RGBShiftShader.js'
 
 const props = defineProps<{ result: Result }>()
 
@@ -51,14 +51,7 @@ function initCamera() {
     const fullW = window.innerWidth
     const fullH = window.innerHeight
     const shiftX = Math.round(fullW * -0.2) // 20% of screen width
-    camera.setViewOffset(
-        fullW,
-        fullH,
-        shiftX,
-        0,
-        fullW,
-        fullH
-    )
+    camera.setViewOffset(fullW, fullH, shiftX, 0, fullW, fullH)
 }
 
 // Creates and appends WebGLRenderer
@@ -151,7 +144,7 @@ function loadPlates() {
 }
 
 function clearPlates() {
-    // remove all previous meshes
+    // Remove all previous meshes
     while (plateGroup.children.length) {
         const child = plateGroup.children.pop()!
         if ((child as THREE.Mesh).geometry)

@@ -27,4 +27,8 @@ const html = md.render(readmeRaw)
 .markdown-body {
     background-color: transparent;
 }
+
+.markdown-body img {
+    display: none;
+}
 </style>
