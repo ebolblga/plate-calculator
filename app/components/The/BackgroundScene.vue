@@ -102,7 +102,7 @@ function initControls() {
     controls.enableDamping = true // smooth motion
     controls.dampingFactor = 0.05
     controls.minDistance = 1
-    controls.maxDistance = 5
+    controls.maxDistance = 4
     controls.rotateSpeed = 0.8
 }
 

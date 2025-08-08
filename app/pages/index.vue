@@ -134,7 +134,7 @@ function exportJson() {
                 {{ AlgoOptions.binaryHeuristic }}
             </label>
         </section>
-        <section class="h-[150px]">
+        <section class="h-[120px] lg:h-[144px]">
             <client-only>
                 <BaseSlider
                     v-model="minWeight"
@@ -167,16 +167,16 @@ function exportJson() {
         <section>
             <client-only>
                 <p class="mt-6">
-                    Weight plate denominations (2 each): {{ plateDenoms }}
+                    Weight plate denominations (2 each): <span class="text-primary">{{ plateDenoms }}</span>
                 </p>
-                <p>Total number of weight plates: {{ result.numPlates }}</p>
+                <p>Total number of weight plates: <span class="text-primary">{{ result.numPlates }}</span></p>
                 <p>
                     Total weight, kg:
-                    {{ result.totalWeight }}
+                    <span class="text-primary">{{ result.totalWeight }}</span>
                 </p>
                 <p>
                     Total height (width of all plates combined), m:
-                    {{ result.totalHeight.toPrecision(3) }}
+                    <span class="text-primary">{{ result.totalHeight.toPrecision(3) }}</span>
                 </p>
             </client-only>
         </section>
