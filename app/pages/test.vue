@@ -2,6 +2,13 @@
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as THREE from 'three'
 import type { Result } from '@types'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
+import { VignetteShader } from 'three/examples/jsm/shaders/VignetteShader.js'
+// import { ChromaticAberrationShader } from 'three/examples/jsm/shaders/ChromaticAberrationShader.js'
+import { RGBShiftShader } from 'three/examples/jsm/shaders/RGBShiftShader.js'
 
 const sceneContainer = ref<HTMLElement | null>(null)
 const result = useLocalStorage<Result>('result', {} as Result)
@@ -12,6 +19,7 @@ let camera: THREE.PerspectiveCamera
 let renderer: THREE.WebGLRenderer
 let controls: OrbitControls
 let plateGroup: THREE.Group // group that will hold stack of plates
+let composer: EffectComposer
 let frameId: number // for cancelAnimationFrame
 
 // Creates scene, lights, weight plate‐stack group
@@ -47,6 +55,36 @@ function initRenderer() {
     renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.setPixelRatio(window.devicePixelRatio)
     sceneContainer.value.appendChild(renderer.domElement)
+
+    initPostProcessing()
+}
+
+function initPostProcessing() {
+    composer = new EffectComposer(renderer)
+
+    // Base render pass with explicit clear color/alpha
+    const renderPass = new RenderPass(scene, camera)
+    renderPass.clearColor = new THREE.Color(0x282828)
+    renderPass.clearAlpha = 1.0
+    composer.addPass(renderPass)
+
+    const bloom = new UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        0.5,
+        0.4,
+        0.6
+    )
+    composer.addPass(bloom)
+
+    // const rgbPass = new ShaderPass(RGBShiftShader)
+    // ;(rgbPass.uniforms as Record<string, any>)['amount'].value = 0.0015
+    // ;(rgbPass.uniforms as Record<string, any>)['angle'].value = Math.PI / 4
+    // composer.addPass(rgbPass)
+
+    // const vigPass = new ShaderPass(VignetteShader)
+    // ;(vigPass.uniforms as Record<string, any>)['offset'].value = 1
+    // ;(vigPass.uniforms as Record<string, any>)['darkness'].value = 1.01
+    // composer.addPass(vigPass)
 }
 
 // Rotate and zoom logic
@@ -98,7 +136,7 @@ function loadPlates() {
 // Render loop
 function animate() {
     controls.update()
-    renderer.render(scene, camera)
+    composer.render()
     frameId = requestAnimationFrame(animate)
 }
 
