@@ -20,7 +20,7 @@ useHead({
 })
 </script>
 <template>
-    <div class="m-0 p-3 bg-background text-text">
+    <div class="m-0 bg-background text-text">
         <slot />
     </div>
 </template>

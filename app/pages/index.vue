@@ -59,7 +59,7 @@ function validateAnswer(nums: number[] = plateDenoms.value): void {
 }
 </script>
 <template>
-    <div class="">
+    <div class="p-3">
         <p class="text-2xl font-bold">[Work in progress] plate-calculator</p>
         <p>
             Calculator for minimum amount of weight plates needed to get any
