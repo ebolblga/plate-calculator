@@ -3,6 +3,10 @@
 import markdownIt from 'markdown-it'
 import readmeRaw from '../README.md?raw'
 
+useSeoMeta({
+    title: 'About | plate-calculator',
+})
+
 const md = markdownIt({
     html: true,
 })

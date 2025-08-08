@@ -27,6 +27,52 @@ minWeight, minWeight + precision, minWeight + 2 * precision, ..., ≤ maxWeight
 
 there exists a selection of plates from S (any number of pairs) that sums exactly to W / 2 per side (assuming you load plates equally on both ends).
 
+## Algorithms
+### 1. Greedy Subset-Sum Cover algorithm
+1.1. First we need to "strip" down all extra constraints problem domain includes:
+- min and max weights are actually useful for the user, to find the solution we only need the range itself, so `targetNum = maxWeight - minWeight`
+- barbell needs to be balanced, so we need to divide target weight and precision by two
+- so we don't have to work with float numbers, its good idea to normalize everything to `units = (weight / precision)`
+
+1.2. Now that everything extra is stripped away, this is a classical [*greedy-cover*]((https://en.wikipedia.org/wiki/Set_cover_problem)). Problem statement:
+
+```text
+Given a non-negative integer T, find the smallest possible set of positive weights such that every integer from 0 through T can be written as the sum of a subset of those weights (each weight used 0 or 1 times).
+```
+
+**Solution:**
+
+Let’s keep track of a variable covered meaning:
+> “We can already form every integer from 0 through covered with our current weights.”
+
+Initially, with no weights, `covered = 0` (we can only form 0)
+
+**Greedy step:**
+
+- To extend our coverage, we need a new weight `w` so that when we add it, we can form every integer up to `covered + w`
+- The smallest weight that achieves that is `w = covered + 1`
+  - Because if you can already do `0…covered`, then by adding `covered + 1` you instantly get coverage up to
+  - And there are no gaps, since you can either use that new weight or not:
+    - sums without `w`: still cover `0…covered`
+    - sums with `w`: cover `w…w + covered` i.e. `(covered + 1)…(2 * covered + 1)`
+- If `covered + (covered + 1)` would go past your target `T`, you don’t “overshoot” by adding `covered + 1`; instead you just add exactly what’s left, `T − covered`. That final weight plugs the gap exactly up to `T`
+- You repeat until covered reaches `T`
+
+This is often referred to as the **Greedy Subset-Sum Cover algorithm**, or more loosely the *Greedy Covering method* for the *“subset-sum coverage”* or *“coin-denomination”* problem. In algorithmic literature it’s a special case of constructing a minimal additive basis for the interval `[0, T]`.
+
+### 2. Binary heuristic
+I also implemented a simple heuristic - count powers of two until I reach the target. This does not produce perfect result, but if you are a programmer then counting such plates would be way easier.
+
+**Example:**
+- `minWeight`: 20
+- `maxWeight`: 64
+- `precision`: 1
+- Output: `[ 0.5, 1, 2, 4, 8, 16 ]`
+
+Greedy-cover algorithm would instead output: `[ 0.5, 1, 2, 4, 6.5, 8 ]`
+
+As you can see number of plates is the same, 12 in both cases, binary heuristic gives weights with bigger total sum, although makes it easier to count.
+
 ## Similar problems
 **1. Change-making problem**
 > The *change-making problem* addresses the question of finding the minimum number of coins (of certain denominations) that add up to a given amount of money. It is a special case of the integer knapsack problem, and has applications wider than just currency.
@@ -41,23 +87,6 @@ In this problem you minimize the number of coins used, not number of denominatio
 Source: [Wikipedia](https://en.wikipedia.org/wiki/Postage_stamp_problem)
 
 In this problem you find all possible sums from already given set of denominations.
-
-**3. Set cover problem**
-> Given a set of elements {1, 2, …, n} (henceforth referred to as the universe, specifying all possible elements under consideration) and a collection, referred to as S, of a given m subsets whose union equals the universe, the set cover problem is to identify a smallest sub-collection of S whose union equals the universe.
-
-Source: [Wikipedia](https://en.wikipedia.org/wiki/Set_cover_problem)
-
-Given a non-negative integer T, find the smallest possible set of positive “weights” (numbers) such that every integer from 0 through T can be written as the sum of a subset of those weights (each weight used 0 or 1 times).
-
-## Current implementation
-As of right now I implemented a simple heuristic - count powers of two until I reach my target. It does account for the fact that barbell needs to be balanced, so I divide target weight and precision by two. And I normalize everything to `units = (weight / precision)` so that it's easier to work in integer world and not float.
-
-- `minWeight`: 0
-- `maxWeight`: 26
-- `precision`: 2
-- Output: [ 1, 2, 4, 8 ]
-
-Although a better result would be: [ 1, 2, 4, 6 ]
 
 ## Setup with [Node.js](https://nodejs.org/en/)
 If you want to try changing the mapping

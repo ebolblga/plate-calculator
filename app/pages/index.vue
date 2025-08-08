@@ -2,12 +2,16 @@
 import { getBinaryDenoms, getCoverDenoms } from '~/composables/searchAlgorithm'
 import { useLocalStorage } from '@vueuse/core'
 
+useSeoMeta({
+    title: 'plate-calculator',
+})
+
 const minWeight = useLocalStorage<number>('min-weight', 20)
 const maxWeight = useLocalStorage<number>('max-weight', 140)
 const precision = useLocalStorage<number>('precision', 1)
 const plateDenoms = ref<number[]>([])
 
-function calculate(heuristic: boolean = false): void {
+function findPlateDenoms(heuristic: boolean = false): void {
     if (minWeight > maxWeight) return
 
     // Clear previous result
@@ -25,9 +29,12 @@ function calculate(heuristic: boolean = false): void {
         ? getBinaryDenoms(targetNum)
         : getCoverDenoms(targetNum)
 
-    plateDenoms.value = denomsUnits
+    const plateDenominations: number[] = denomsUnits
         .map((u: number) => u * unit)
         .sort((a, b) => a - b)
+
+    plateDenoms.value = plateDenominations
+    validateAnswer(plateDenominations)
 }
 
 function validateAnswer(nums: number[] = plateDenoms.value): void {
@@ -53,9 +60,10 @@ function validateAnswer(nums: number[] = plateDenoms.value): void {
 </script>
 <template>
     <div class="">
-        <p class="text-2xl font-bold">
-            [Work in progress] Calculator for minimum amount of weight plates
-            needed to get any value in a given range and precision.
+        <p class="text-2xl font-bold">[Work in progress] plate-calculator</p>
+        <p>
+            Calculator for minimum amount of weight plates needed to get any
+            value in a given range and precision
         </p>
         <nav class="mt-3 mb-6 text-accent">
             <NuxtLink to="/about">{{ '<- About this project' }}</NuxtLink>
@@ -81,21 +89,14 @@ function validateAnswer(nums: number[] = plateDenoms.value): void {
             :step="0.25"
             label="Precision, kg:"
             id="precision" />
-        <button
-            @click="calculate()"
-            class="w-full py-1 bg-accent text-background mt-6">
-            Greedy Subset-Sum Cover algorithm
-        </button>
-        <button
-            @click="calculate(true)"
-            class="w-full py-1 bg-accent text-background mt-6">
-            Binary heuristic
-        </button>
-        <button
-            @click="validateAnswer()"
-            class="w-full py-1 bg-accent text-background mt-6">
-            Validate
-        </button>
+        <section class="w-full mt-6 flex flex-row gap-x-4">
+            <BaseButton @click="findPlateDenoms()" class="w-1/2">
+                Greedy Subset-Sum Cover algorithm
+            </BaseButton>
+            <BaseButton @click="findPlateDenoms(true)" class="w-1/2">
+                Binary heuristic
+            </BaseButton>
+        </section>
         <p class="mt-6">
             Weight plate denominations (2 each): {{ plateDenoms }}
         </p>
