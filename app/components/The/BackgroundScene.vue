@@ -10,8 +10,9 @@ import { VignetteShader } from 'three/examples/jsm/shaders/VignetteShader.js'
 // import { ChromaticAberrationShader } from 'three/examples/jsm/shaders/ChromaticAberrationShader.js'
 import { RGBShiftShader } from 'three/examples/jsm/shaders/RGBShiftShader.js'
 
+const props = defineProps<{ result: Result }>()
+
 const sceneContainer = ref<HTMLElement | null>(null)
-const result = useLocalStorage<Result>('result', {} as Result)
 
 // Core Three.js objects
 let scene: THREE.Scene
@@ -43,8 +44,21 @@ function initCamera() {
         0.1,
         1000
     )
-    camera.position.set(0.1, 0.05, 0.1)
+
+    camera.position.set(0.1, -0.05, 0.1)
     camera.lookAt(0, 0, 0)
+
+    const fullW = window.innerWidth
+    const fullH = window.innerHeight
+    const shiftX = Math.round(fullW * -0.2) // 20% of screen width
+    camera.setViewOffset(
+        fullW,
+        fullH,
+        shiftX,
+        0,
+        fullW,
+        fullH
+    )
 }
 
 // Creates and appends WebGLRenderer
@@ -90,6 +104,7 @@ function initPostProcessing() {
 // Rotate and zoom logic
 function initControls() {
     controls = new OrbitControls(camera, renderer.domElement)
+    controls.target.set(0, 0, 0)
     controls.enablePan = true
     controls.enableDamping = true // smooth motion
     controls.dampingFactor = 0.05
@@ -100,12 +115,14 @@ function initControls() {
 
 // Builds stack of weight plates
 function loadPlates() {
-    if (!result.value.plateDenoms) return
+    clearPlates()
+
+    if (!props.result.plateDenoms) return
 
     const plateSpacing = 0.1
 
     // Sort from heavies to lightest.
-    const plates = [...result.value.plateDenoms].sort(
+    const plates = [...props.result.plateDenoms].sort(
         (a, b) => b.weight - a.weight
     )
 
@@ -133,6 +150,20 @@ function loadPlates() {
     }
 }
 
+function clearPlates() {
+    // remove all previous meshes
+    while (plateGroup.children.length) {
+        const child = plateGroup.children.pop()!
+        if ((child as THREE.Mesh).geometry)
+            (child as THREE.Mesh).geometry.dispose()
+        if ((child as THREE.Mesh).material) {
+            const mat = (child as THREE.Mesh).material
+            if (Array.isArray(mat)) mat.forEach((m) => m.dispose())
+            else mat.dispose()
+        }
+    }
+}
+
 // Render loop
 function animate() {
     controls.update()
@@ -155,6 +186,14 @@ onMounted(() => {
     initControls()
     loadPlates()
 
+    watch(
+        () => props.result.plateDenoms,
+        (newPlates) => {
+            if (newPlates) loadPlates()
+        },
+        { deep: true }
+    )
+
     window.addEventListener('resize', onResize)
     animate()
 })
@@ -169,5 +208,5 @@ onBeforeUnmount(() => {
 <template>
     <div
         ref="sceneContainer"
-        class="w-screen h-screen m-0 p-0 overflow-hidden relative"></div>
+        class="w-screen h-screen m-0 p-0 overflow-hidden fixed inset-0 -z-10"></div>
 </template>
