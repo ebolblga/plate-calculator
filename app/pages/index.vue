@@ -5,7 +5,25 @@ import { useLocalStorage } from '@vueuse/core'
 import type { Result } from '@types'
 
 useSeoMeta({
-    title: 'plate-calculator',
+    title: 'Plate Calculator - Weight Plate Optimization Tool',
+    description: 'Calculate the minimum number of weight plates needed for any weight range. Optimize your home gym setup with our advanced plate calculator tool. Perfect for DIY gym equipment and weight plate optimization.',
+    keywords: 'weight plates, gym equipment, plate calculator, home gym, barbell weights, fitness calculator, weight optimization, DIY gym, weight plate calculator',
+    author: 'Plate Calculator',
+    robots: 'index, follow',
+    ogTitle: 'Plate Calculator - Weight Plate Optimization Tool',
+    ogDescription: 'Calculate the minimum number of weight plates needed for any weight range. Optimize your home gym setup with our advanced plate calculator tool.',
+    ogType: 'website',
+    twitterCard: 'summary_large_image',
+    twitterTitle: 'Plate Calculator - Weight Plate Optimization Tool',
+    twitterDescription: 'Calculate the minimum number of weight plates needed for any weight range. Optimize your home gym setup with our advanced plate calculator tool.',
+})
+
+useHead({
+    script: [
+        {
+            type: 'application/ld+json',
+        }
+    ]
 })
 
 const minWeight = useLocalStorage<number>('min-weight', 20)
