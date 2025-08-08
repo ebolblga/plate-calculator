@@ -164,20 +164,47 @@ function exportJson() {
                 Download JSON with dimensions
             </BaseButton>
         </section>
-        <section>
+        <section class="mt-4">
             <client-only>
-                <p class="mt-6">
-                    Weight plate denominations (2 each): <span class="text-primary">{{ plateDenoms }}</span>
-                </p>
-                <p>Total number of weight plates: <span class="text-primary">{{ result.numPlates }}</span></p>
-                <p>
-                    Total weight, kg:
-                    <span class="text-primary">{{ result.totalWeight }}</span>
-                </p>
-                <p>
-                    Total height (width of all plates combined), m:
-                    <span class="text-primary">{{ result.totalHeight.toPrecision(3) }}</span>
-                </p>
+                <div
+                    class="backdrop-blur-sm rounded-lg p-3 border border-text/20 space-y-2">
+                    <h3 class="text-sm font-semibold mb-2">Results</h3>
+
+                    <div class="grid grid-cols-3 gap-2 text-xs">
+                        <div class="text-center">
+                            <div>Plates</div>
+                            <div class="text-primary font-mono">
+                                {{ result.numPlates }}
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <div>Weight</div>
+                            <div class="text-primary font-mono">
+                                {{ result.totalWeight }}kg
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <div>Height</div>
+                            <div class="text-primary font-mono">
+                                {{ result.totalHeight.toPrecision(3) }}m
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-1">
+                        <div class="text-xs mb-1">Denominations:</div>
+                        <div class="flex flex-wrap gap-1">
+                            <span
+                                v-for="denom in plateDenoms"
+                                :key="denom"
+                                class="bg-primary/20 text-primary px-1.5 py-0.5 rounded text-xs font-mono border border-primary/30">
+                                2x{{ denom }}kg
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </client-only>
         </section>
     </div>
