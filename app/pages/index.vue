@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { getBinaryDenoms, getCoverDenoms } from '~/composables/searchAlgorithm'
+import { genPlateObjects } from '~/composables/generatePlates'
 import { useLocalStorage } from '@vueuse/core'
+import type { PlateObject, Result } from '@types'
 
 useSeoMeta({
     title: 'plate-calculator',
@@ -10,6 +12,11 @@ const minWeight = useLocalStorage<number>('min-weight', 20)
 const maxWeight = useLocalStorage<number>('max-weight', 140)
 const precision = useLocalStorage<number>('precision', 1)
 const plateDenoms = ref<number[]>([])
+const result = useLocalStorage<Result>('result', {} as Result)
+
+onMounted(() => {
+    findPlateDenoms()
+})
 
 function findPlateDenoms(heuristic: boolean = false): void {
     if (minWeight > maxWeight) return
@@ -34,10 +41,19 @@ function findPlateDenoms(heuristic: boolean = false): void {
         .sort((a, b) => a - b)
 
     plateDenoms.value = plateDenominations
-    validateAnswer(plateDenominations)
+    const plateObjects = genPlateObjects(plateDenominations)
+    // console.log('Answer validation: ', validateAnswer(plateDenominations))
+    // console.log('Plates: ', plateObjects)
+
+    result.value = {
+        unitOfWeight: 'kg',
+        unitOfLength: 'm',
+        numPlates: plateDenominations.length * 2,
+        plateDenoms: plateObjects,
+    }
 }
 
-function validateAnswer(nums: number[] = plateDenoms.value): void {
+function validateAnswer(nums: number[] = plateDenoms.value): number[] {
     const result = new Set<number>()
 
     const dfs = (index: number, currentSum: number) => {
@@ -55,7 +71,7 @@ function validateAnswer(nums: number[] = plateDenoms.value): void {
 
     dfs(0, 0)
 
-    console.log(Array.from(result).sort((a, b) => a - b))
+    return Array.from(result).sort((a, b) => a - b)
 }
 </script>
 <template>
@@ -97,9 +113,16 @@ function validateAnswer(nums: number[] = plateDenoms.value): void {
                 Binary heuristic
             </BaseButton>
         </section>
-        <p class="mt-6">
-            Weight plate denominations (2 each): {{ plateDenoms }}
-        </p>
-        <p>Total number of weight plates: {{ plateDenoms.length * 2 }}</p>
+        <section>
+            <client-only>
+                <p class="mt-6">
+                    Weight plate denominations (2 each): {{ plateDenoms }}
+                </p>
+                <p>
+                    Total number of weight plates: {{ plateDenoms.length * 2 }}
+                </p>
+                <pre v-if="result">{{ JSON.stringify(result, null, 2) }}</pre>
+            </client-only>
+        </section>
     </div>
 </template>
