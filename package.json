@@ -1,0 +1,43 @@
+{
+  "name": "plate-calculator",
+  "description": "Calculate the minimum number of weight plates needed for any weight range. Optimize your home gym setup with our advanced plate calculator tool.",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxtjs/robots": "^5.4.0",
+    "@nuxtjs/sitemap": "^7.4.3",
+    "@types/three": "^0.179.0",
+    "@vueuse/nuxt": "13.6.0",
+    "github-markdown-css": "^5.8.1",
+    "markdown-it": "^14.1.0",
+    "nuxt": "^4.0.1",
+    "three": "^0.179.1",
+    "vue": "^3.5.18",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "@types/node": "^24.2.1"
+  },
+  "keywords": [
+    "weight-plates",
+    "gym-equipment",
+    "plate-calculator",
+    "home-gym",
+    "barbell-weights",
+    "fitness-calculator",
+    "weight-optimization",
+    "diy-gym",
+    "weight-plate-calculator"
+  ],
+  "author": "ebolblga",
+  "license": "MIT"
+}

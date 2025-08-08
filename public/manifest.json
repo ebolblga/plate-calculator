@@ -1,0 +1,10 @@
+{
+  "name": "Plate Calculator - Weight Plate Optimization Tool",
+  "short_name": "Plate Calculator",
+  "description": "Calculate the minimum number of weight plates needed for any weight range. Optimize your home gym setup with our advanced plate calculator tool.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#282828",
+  "theme_color": "#282828",
+  "icons": []
+}
