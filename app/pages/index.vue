@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { genPlateObjects } from '~/composables/generatePlates'
 import { getBinaryDenoms, getCoverDenoms } from '~/composables/searchAlgorithm'
-import { useLocalStorage } from '@vueuse/core'
-import type { Result } from '@types'
+import { useLocalStorage, useDebounceFn } from '@vueuse/core'
+import { type Result, AlgoOptions } from '@types'
 
 useSeoMeta({
     title: 'Plate Calculator',
@@ -35,12 +35,23 @@ const maxWeight = useLocalStorage<number>('max-weight', 140)
 const precision = useLocalStorage<number>('precision', 1)
 const plateDenoms = ref<number[]>([])
 const result = useLocalStorage<Result>('result', {} as Result)
+const selectedAlgo = useLocalStorage('selected-algo', AlgoOptions.greedyCover)
 
 onMounted(() => {
     findPlateDenoms()
 })
 
-function findPlateDenoms(heuristic: boolean = false): void {
+const debouncedFindPlateDenoms = useDebounceFn(findPlateDenoms, 200)
+
+watch(selectedAlgo, () => {
+    findPlateDenoms()
+})
+
+watch([minWeight, maxWeight, precision], () => {
+    debouncedFindPlateDenoms()
+})
+
+function findPlateDenoms(): void {
     if (minWeight > maxWeight) return
 
     // Clear previous result
@@ -54,9 +65,10 @@ function findPlateDenoms(heuristic: boolean = false): void {
         (maxWeight.value - minWeight.value) / (unit * 2)
     )
 
-    const denomsUnits: number[] = heuristic
-        ? getBinaryDenoms(targetNum)
-        : getCoverDenoms(targetNum)
+    const denomsUnits: number[] =
+        selectedAlgo.value === AlgoOptions.binaryHeuristic
+            ? getBinaryDenoms(targetNum)
+            : getCoverDenoms(targetNum)
 
     const plateDenominations: number[] = denomsUnits
         .map((u: number) => u * unit)
@@ -74,6 +86,8 @@ function findPlateDenoms(heuristic: boolean = false): void {
                 (accumulator, currentValue) => accumulator + currentValue,
                 0
             ) * 2,
+        totalHeight:
+            plateObjects.reduce((acc, curr) => (acc += curr.height), 0) * 2,
         plateDenoms: plateObjects,
     }
 }
@@ -94,26 +108,45 @@ function exportJson() {
     <TheBackgroundScene :result="result" />
     <div class="p-3 absolute top-0 left-0 z-20 select-none w-1/2">
         <p class="text-2xl font-bold">plate-calculator</p>
-        <p>
+        <p class="italic">
             Calculator for minimum amount of weight plates needed to get any
-            value in a given range and precision (best viewed on desktop)
+            value in a given range and precision
         </p>
         <nav class="mt-3 mb-6 text-accent">
             <NuxtLink to="/about">{{ '<- About this project' }}</NuxtLink>
         </nav>
+        <section class="flex flex-col gap-y-3 mb-3">
+            <label>
+                <input
+                    type="radio"
+                    :value="AlgoOptions.greedyCover"
+                    v-model="selectedAlgo"
+                    class="w-4 h-4 bg-background accent-primary" />
+                {{ AlgoOptions.greedyCover }}
+            </label>
+
+            <label>
+                <input
+                    type="radio"
+                    :value="AlgoOptions.binaryHeuristic"
+                    v-model="selectedAlgo"
+                    class="w-4 h-4 bg-background accent-primary" />
+                {{ AlgoOptions.binaryHeuristic }}
+            </label>
+        </section>
         <section class="h-[150px]">
             <client-only>
                 <BaseSlider
                     v-model="minWeight"
                     :min="0"
-                    :max="1023"
+                    :max="1000"
                     :step="1"
                     label="Min weight, kg:"
                     id="min-weight" />
                 <BaseSlider
                     v-model="maxWeight"
                     :min="1"
-                    :max="1023"
+                    :max="1000"
                     :step="1"
                     label="Max weight, kg:"
                     id="max-weight" />
@@ -126,14 +159,8 @@ function exportJson() {
                     id="precision" />
             </client-only>
         </section>
-        <section class="w-full mt-6 flex flex-row gap-x-1">
-            <BaseButton @click="findPlateDenoms()" class="w-1/3">
-                Greedy Subset-Sum Cover algorithm
-            </BaseButton>
-            <BaseButton @click="findPlateDenoms(true)" class="w-1/3">
-                Binary heuristic
-            </BaseButton>
-            <BaseButton @click="exportJson" class="w-1/3">
+        <section class="w-full mt-6">
+            <BaseButton @click="exportJson">
                 Download JSON with dimensions
             </BaseButton>
         </section>
@@ -142,14 +169,15 @@ function exportJson() {
                 <p class="mt-6">
                     Weight plate denominations (2 each): {{ plateDenoms }}
                 </p>
-                <p>
-                    Total number of weight plates: {{ plateDenoms.length * 2 }}
-                </p>
+                <p>Total number of weight plates: {{ result.numPlates }}</p>
                 <p>
                     Total weight, kg:
-                    {{ plateDenoms.reduce((acc, curr) => acc + curr, 0) * 2 }}
+                    {{ result.totalWeight }}
                 </p>
-                <!-- <pre v-if="result">{{ JSON.stringify(result, null, 2) }}</pre> -->
+                <p>
+                    Total height (width of all plates combined), m:
+                    {{ result.totalHeight.toPrecision(3) }}
+                </p>
             </client-only>
         </section>
     </div>
