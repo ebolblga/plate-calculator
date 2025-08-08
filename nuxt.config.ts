@@ -35,26 +35,26 @@ export default defineNuxtConfig({
                 { property: 'og:type', content: 'website' },
                 { property: 'og:title', content: 'Plate Calculator - Weight Plate Optimization Tool' },
                 { property: 'og:description', content: 'Calculate the minimum number of weight plates needed for any weight range. Optimize your home gym setup with our advanced plate calculator tool.' },
-                { property: 'og:url', content: 'https://plate-calculator.vercel.app/' },
+                { property: 'og:url', content: 'https://plate-calculator-2.vercel.app/' },
                 { name: 'twitter:card', content: 'summary_large_image' },
                 { name: 'twitter:title', content: 'Plate Calculator - Weight Plate Optimization Tool' },
                 { name: 'twitter:description', content: 'Calculate the minimum number of weight plates needed for any weight range. Optimize your home gym setup with our advanced plate calculator tool.' },
             ],
             link: [
                 { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-                { rel: 'canonical', href: 'https://plate-calculator.vercel.app/' }
+                { rel: 'canonical', href: 'https://plate-calculator-2.vercel.app/' }
             ]
         }
     },
     // Runtime config for SEO modules
     runtimeConfig: {
         public: {
-            siteUrl: 'https://plate-calculator.vercel.app/'
+            siteUrl: 'https://plate-calculator-2.vercel.app/'
         }
     },
     nitro: {
         prerender: {
-            routes: ['/sitemap.xml', '/robots.txt', '/llms.txt']
+            routes: ['/_robots.txt', '/llms.txt']
         }
     }
 })

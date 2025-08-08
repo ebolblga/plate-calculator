@@ -5,25 +5,29 @@ import { useLocalStorage } from '@vueuse/core'
 import type { Result } from '@types'
 
 useSeoMeta({
-    title: 'Plate Calculator - Weight Plate Optimization Tool',
-    description: 'Calculate the minimum number of weight plates needed for any weight range. Optimize your home gym setup with our advanced plate calculator tool. Perfect for DIY gym equipment and weight plate optimization.',
-    keywords: 'weight plates, gym equipment, plate calculator, home gym, barbell weights, fitness calculator, weight optimization, DIY gym, weight plate calculator',
+    title: 'Plate Calculator',
+    description:
+        'Calculate the minimum number of weight plates needed for any weight range. Optimize your home gym setup with our advanced plate calculator tool. Perfect for DIY gym equipment and weight plate optimization.',
+    keywords:
+        'weight plates, gym equipment, plate calculator, home gym, barbell weights, fitness calculator, weight optimization, DIY gym, weight plate calculator',
     author: 'Plate Calculator',
     robots: 'index, follow',
     ogTitle: 'Plate Calculator - Weight Plate Optimization Tool',
-    ogDescription: 'Calculate the minimum number of weight plates needed for any weight range. Optimize your home gym setup with our advanced plate calculator tool.',
+    ogDescription:
+        'Calculate the minimum number of weight plates needed for any weight range. Optimize your home gym setup with our advanced plate calculator tool.',
     ogType: 'website',
     twitterCard: 'summary_large_image',
     twitterTitle: 'Plate Calculator - Weight Plate Optimization Tool',
-    twitterDescription: 'Calculate the minimum number of weight plates needed for any weight range. Optimize your home gym setup with our advanced plate calculator tool.',
+    twitterDescription:
+        'Calculate the minimum number of weight plates needed for any weight range. Optimize your home gym setup with our advanced plate calculator tool.',
 })
 
 useHead({
     script: [
         {
             type: 'application/ld+json',
-        }
-    ]
+        },
+    ],
 })
 
 const minWeight = useLocalStorage<number>('min-weight', 20)
@@ -89,7 +93,7 @@ function exportJson() {
 <template>
     <TheBackgroundScene :result="result" />
     <div class="p-3 absolute top-0 left-0 z-20 select-none w-1/2">
-        <p class="text-2xl font-bold">[WIP] plate-calculator</p>
+        <p class="text-2xl font-bold">plate-calculator</p>
         <p>
             Calculator for minimum amount of weight plates needed to get any
             value in a given range and precision (best viewed on desktop)
@@ -123,14 +127,10 @@ function exportJson() {
             </client-only>
         </section>
         <section class="w-full mt-6 flex flex-row gap-x-1">
-            <BaseButton
-                @click="findPlateDenoms()"
-                class="w-1/3">
+            <BaseButton @click="findPlateDenoms()" class="w-1/3">
                 Greedy Subset-Sum Cover algorithm
             </BaseButton>
-            <BaseButton
-                @click="findPlateDenoms(true)"
-                class="w-1/3">
+            <BaseButton @click="findPlateDenoms(true)" class="w-1/3">
                 Binary heuristic
             </BaseButton>
             <BaseButton @click="exportJson" class="w-1/3">
