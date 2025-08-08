@@ -2,7 +2,7 @@
 import { getBinaryDenoms, getCoverDenoms } from '~/composables/searchAlgorithm'
 import { genPlateObjects } from '~/composables/generatePlates'
 import { useLocalStorage } from '@vueuse/core'
-import type { PlateObject, Result } from '@types'
+import type { Result } from '@types'
 
 useSeoMeta({
     title: 'plate-calculator',

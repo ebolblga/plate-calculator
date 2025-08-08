@@ -1,25 +1,30 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as THREE from 'three'
+import type { Result } from '@types'
 
 const sceneContainer = ref<HTMLElement | null>(null)
+const result = useLocalStorage<Result>('result', {} as Result)
 
-// core three.js objects
+// Core Three.js objects
 let scene: THREE.Scene
 let camera: THREE.PerspectiveCamera
 let renderer: THREE.WebGLRenderer
+let controls: OrbitControls
 let plateGroup: THREE.Group // group that will hold stack of plates
 let frameId: number // for cancelAnimationFrame
 
 // Creates scene, lights, weight plate‐stack group
 function initScene() {
     scene = new THREE.Scene()
-    scene.background = new THREE.Color(0xf0f0f0)
+    scene.background = new THREE.Color(0x282828)
     plateGroup = new THREE.Group()
     scene.add(plateGroup)
 
-    const ambient = new THREE.AmbientLight(0xffffff, 0.6)
-    scene.add(ambient)
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6))
+    const dir = new THREE.DirectionalLight(0xffffff, 1)
+    dir.position.set(1, 0.2, 1)
+    scene.add(dir)
 }
 
 // Sets up perspective camera
@@ -30,7 +35,7 @@ function initCamera() {
         0.1,
         1000
     )
-    camera.position.set(0, 0, 10)
+    camera.position.set(0.1, 0.05, 0.1)
     camera.lookAt(0, 0, 0)
 }
 
@@ -46,16 +51,53 @@ function initRenderer() {
 
 // Rotate and zoom logic
 function initControls() {
-    // placeholder: later, set up OrbitControls here,
+    controls = new OrbitControls(camera, renderer.domElement)
+    controls.enablePan = true
+    controls.enableDamping = true // smooth motion
+    controls.dampingFactor = 0.05
+    controls.minDistance = 1
+    controls.maxDistance = 5
+    controls.rotateSpeed = 0.8
 }
 
 // Builds stack of weight plates
 function loadPlates() {
-    // placeholder: build stack of weight-plates here
+    if (!result.value.plateDenoms) return
+
+    const plateSpacing = 0.1
+
+    // Sort from heavies to lightest.
+    const plates = [...result.value.plateDenoms].sort(
+        (a, b) => b.weight - a.weight
+    )
+
+    // Calculate total height of all plates
+    const totalHeight = plates.reduce(
+        (sum, p) => sum + p.height + plateSpacing,
+        0
+    )
+
+    // Start half of total height below zero
+    let yOffset = -totalHeight / 2
+
+    // Stack sorted plates
+    for (const plate of plates) {
+        const mesh = createPlateMesh(plate)
+
+        // Rotate plate
+        mesh.rotation.x = Math.PI / 2
+
+        // Position so the stack is centered at y = 0
+        mesh.position.y = yOffset + plate.height / 2
+
+        plateGroup.add(mesh)
+        yOffset += plate.height + plateSpacing
+    }
 }
 
 // Render loop
 function animate() {
+    controls.update()
     renderer.render(scene, camera)
     frameId = requestAnimationFrame(animate)
 }
@@ -89,5 +131,5 @@ onBeforeUnmount(() => {
 <template>
     <div
         ref="sceneContainer"
-        class="w-screen h-screen m-0 p-0 overflow-hidden"></div>
+        class="w-screen h-screen m-0 p-0 overflow-hidden relative"></div>
 </template>
