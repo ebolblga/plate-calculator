@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-
-# Vercel hosted single-page application
-# All content is publicly accessible

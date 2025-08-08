@@ -1,6 +1,10 @@
 # [WIP] plate-calculator
 ## Calculator for minimum amount of weight plates needed to get any value in a given range and precision.
 
+![Vercel](https://vercelbadge.vercel.app/api/ebolblga/plate-calculator)
+
+Project repository on GitHub [ebolblga/plate-calculator](https://github.com/ebolblga/plate-calculator).
+
 Web application to find minimal amount weight plates you need to make for the barbell (given weight range and precision), if you want to make your own gym gear.
 
 Great example: [https://youtu.be/um4sVgB4Qmc](https://youtu.be/um4sVgB4Qmc)
