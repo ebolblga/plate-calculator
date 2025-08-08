@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { getBinaryDenoms } from '~/composables/searchAlgorithm'
+import { getBinaryDenoms, getCoverDenoms } from '~/composables/searchAlgorithm'
 import { useLocalStorage } from '@vueuse/core'
 
-const minWeight = useLocalStorage<number>('min-weight', 0)
-const maxWeight = useLocalStorage<number>('max-weight', 127)
+const minWeight = useLocalStorage<number>('min-weight', 20)
+const maxWeight = useLocalStorage<number>('max-weight', 140)
 const precision = useLocalStorage<number>('precision', 1)
 const plateDenoms = ref<number[]>([])
 
-function calculate(): void {
+function calculate(heuristic: boolean = false): void {
     if (minWeight > maxWeight) return
 
     // Clear previous result
@@ -21,9 +21,34 @@ function calculate(): void {
         (maxWeight.value - minWeight.value) / (unit * 2)
     )
 
-    const denomsUnits: number[] = getBinaryDenoms(targetNum)
+    const denomsUnits: number[] = heuristic
+        ? getBinaryDenoms(targetNum)
+        : getCoverDenoms(targetNum)
 
-    plateDenoms.value = denomsUnits.map((u: number) => u * unit)
+    plateDenoms.value = denomsUnits
+        .map((u: number) => u * unit)
+        .sort((a, b) => a - b)
+}
+
+function validateAnswer(nums: number[] = plateDenoms.value): void {
+    const result = new Set<number>()
+
+    const dfs = (index: number, currentSum: number) => {
+        if (index === nums.length) {
+            result.add(currentSum * 2 + minWeight.value)
+            return
+        }
+
+        // @ts-ignore
+        dfs(index + 1, currentSum + nums[index])
+
+        // Exclude nums[index]
+        dfs(index + 1, currentSum)
+    }
+
+    dfs(0, 0)
+
+    console.log(Array.from(result).sort((a, b) => a - b))
 }
 </script>
 <template>
@@ -57,9 +82,19 @@ function calculate(): void {
             label="Precision, kg:"
             id="precision" />
         <button
-            @click="calculate"
+            @click="calculate()"
             class="w-full py-1 bg-accent text-background mt-6">
-            Calculate
+            Greedy Subset-Sum Cover algorithm
+        </button>
+        <button
+            @click="calculate(true)"
+            class="w-full py-1 bg-accent text-background mt-6">
+            Binary heuristic
+        </button>
+        <button
+            @click="validateAnswer()"
+            class="w-full py-1 bg-accent text-background mt-6">
+            Validate
         </button>
         <p class="mt-6">
             Weight plate denominations (2 each): {{ plateDenoms }}

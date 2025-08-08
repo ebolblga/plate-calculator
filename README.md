@@ -42,6 +42,23 @@ Source: [Wikipedia](https://en.wikipedia.org/wiki/Postage_stamp_problem)
 
 In this problem you find all possible sums from already given set of denominations.
 
+**3. Set cover problem**
+> Given a set of elements {1, 2, …, n} (henceforth referred to as the universe, specifying all possible elements under consideration) and a collection, referred to as S, of a given m subsets whose union equals the universe, the set cover problem is to identify a smallest sub-collection of S whose union equals the universe.
+
+Source: [Wikipedia](https://en.wikipedia.org/wiki/Set_cover_problem)
+
+Given a non-negative integer T, find the smallest possible set of positive “weights” (numbers) such that every integer from 0 through T can be written as the sum of a subset of those weights (each weight used 0 or 1 times).
+
+## Current implementation
+As of right now I implemented a simple heuristic - count powers of two until I reach my target. It does account for the fact that barbell needs to be balanced, so I divide target weight and precision by two. And I normalize everything to `units = (weight / precision)` so that it's easier to work in integer world and not float.
+
+- `minWeight`: 0
+- `maxWeight`: 26
+- `precision`: 2
+- Output: [ 1, 2, 4, 8 ]
+
+Although a better result would be: [ 1, 2, 4, 6 ]
+
 ## Setup with [Node.js](https://nodejs.org/en/)
 If you want to try changing the mapping
 ```bash
