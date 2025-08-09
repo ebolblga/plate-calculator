@@ -108,58 +108,67 @@ function exportJson() {
     <TheBackgroundScene :result="result" />
     <div class="p-3 absolute top-0 left-0 z-20 select-none w-1/2">
         <p class="text-2xl font-bold">plate-calculator</p>
-        <p class="italic">
+        <p class="italic hidden lg:block">
             Calculator for minimum amount of weight plates needed to get any
             value in a given range and precision
         </p>
-        <nav class="mt-3 mb-6 text-accent">
+        <nav class="mt-3 mb-4 text-accent">
             <NuxtLink to="/about">{{ '<- About this project' }}</NuxtLink>
         </nav>
-        <section class="flex flex-col gap-y-3 mb-3">
-            <label>
-                <input
-                    type="radio"
-                    :value="AlgoOptions.greedyCover"
-                    v-model="selectedAlgo"
-                    class="w-4 h-4 bg-background accent-primary" />
-                {{ AlgoOptions.greedyCover }}
-            </label>
-
-            <label>
-                <input
-                    type="radio"
-                    :value="AlgoOptions.binaryHeuristic"
-                    v-model="selectedAlgo"
-                    class="w-4 h-4 bg-background accent-primary" />
-                {{ AlgoOptions.binaryHeuristic }}
-            </label>
+        <section class="mb-4">
+            <div
+                class="bg-background/30 backdrop-blur-sm rounded-lg p-3 border border-text/10">
+                <div class="space-y-1">
+                    <label
+                        class="flex items-center gap-2 cursor-pointer hover:bg-background/20 rounded p-1 transition-colors">
+                        <input
+                            type="radio"
+                            :value="AlgoOptions.greedyCover"
+                            v-model="selectedAlgo"
+                            class="w-4 h-4 bg-background accent-primary" />
+                        {{ AlgoOptions.greedyCover }}
+                    </label>
+                    <label
+                        class="flex items-center gap-2 cursor-pointer hover:bg-background/20 rounded p-1 transition-colors">
+                        <input
+                            type="radio"
+                            :value="AlgoOptions.binaryHeuristic"
+                            v-model="selectedAlgo"
+                            class="w-4 h-4 bg-background accent-primary" />
+                        {{ AlgoOptions.binaryHeuristic }}
+                    </label>
+                </div>
+            </div>
         </section>
-        <section class="h-[120px] lg:h-[144px]">
+        <section class="mb-4 min-h-[154px]">
             <client-only>
-                <BaseSlider
-                    v-model="minWeight"
-                    :min="0"
-                    :max="1000"
-                    :step="1"
-                    label="Min weight, kg:"
-                    id="min-weight" />
-                <BaseSlider
-                    v-model="maxWeight"
-                    :min="1"
-                    :max="1000"
-                    :step="1"
-                    label="Max weight, kg:"
-                    id="max-weight" />
-                <BaseSlider
-                    v-model="precision"
-                    :min="0.25"
-                    :max="40"
-                    :step="0.25"
-                    label="Precision, kg:"
-                    id="precision" />
+                <div
+                    class="space-y-2 bg-background/30 backdrop-blur-sm rounded-lg px-3 py-2 border border-text/10">
+                    <BaseSlider
+                        v-model="minWeight"
+                        :min="0"
+                        :max="1000"
+                        :step="1"
+                        label="Min weight, kg:"
+                        id="min-weight" />
+                    <BaseSlider
+                        v-model="maxWeight"
+                        :min="1"
+                        :max="1000"
+                        :step="1"
+                        label="Max weight, kg:"
+                        id="max-weight" />
+                    <BaseSlider
+                        v-model="precision"
+                        :min="0.25"
+                        :max="40"
+                        :step="0.25"
+                        label="Precision, kg:"
+                        id="precision" />
+                </div>
             </client-only>
         </section>
-        <section class="w-full mt-6 flex justify-center">
+        <section class="w-full mt-4 flex justify-center">
             <BaseButton @click="exportJson">
                 <Icon name="mdi:code-json" size="16" />
                 Download JSON

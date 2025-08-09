@@ -29,16 +29,24 @@ function emitValue() {
 }
 </script>
 <template>
-    <label :for="id" class="block mb-2 text-text">
-        {{ label }} {{ props.modelValue }}
-    </label>
-    <input
-        :id="id"
-        type="range"
-        :min="min"
-        :max="max"
-        :step="step"
-        v-model.number="internalValue"
-        @input="emitValue"
-        class="w-full h-2 appearance-none cursor-pointer bg-secondary rounded-sm focus:outline-none transition-opacity accent-primary" />
+    <div class="space-y-2">
+        <div class="flex justify-between items-center">
+            <label :for="id" class="font-medium text-text/90">
+                {{ label }}
+            </label>
+            <span
+                class="font-mono text-primary font-semibold bg-primary/10 px-1.5 py-0.5 rounded">
+                {{ props.modelValue }}
+            </span>
+        </div>
+        <input
+            :id="id"
+            type="range"
+            :min="min"
+            :max="max"
+            :step="step"
+            v-model.number="internalValue"
+            @input="emitValue"
+            class="w-full h-2 appearance-none cursor-pointer bg-secondary/50 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-200 accent-primary hover:bg-secondary/70" />
+    </div>
 </template>
