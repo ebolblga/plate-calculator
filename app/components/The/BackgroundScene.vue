@@ -45,12 +45,12 @@ function initCamera() {
         1000
     )
 
-    camera.position.set(0.1, -0.05, 0.1)
+    camera.position.set(0.35, -0.14, 0.1)
     camera.lookAt(0, 0, 0)
 
     const fullW = window.innerWidth
     const fullH = window.innerHeight
-    const shiftX = Math.round(fullW * -0.2) // 20% of screen width
+    const shiftX = Math.round(fullW * -0.25) // 25% of screen width
     camera.setViewOffset(fullW, fullH, shiftX, 0, fullW, fullH)
 }
 

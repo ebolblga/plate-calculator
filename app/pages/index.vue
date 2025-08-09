@@ -51,6 +51,20 @@ watch([minWeight, maxWeight, precision], () => {
     debouncedFindPlateDenoms()
 })
 
+// Ensures minWeight never exceeds maxWeight
+watch(minWeight, (val) => {
+    if (val > maxWeight.value) {
+        maxWeight.value = val
+    }
+})
+
+// Ensures maxWeight never goes below minWeight
+watch(maxWeight, (val) => {
+    if (val < minWeight.value) {
+        minWeight.value = val
+    }
+})
+
 function findPlateDenoms(): void {
     if (minWeight > maxWeight) return
 
@@ -107,7 +121,7 @@ function exportJson() {
 <template>
     <TheBackgroundScene :result="result" />
     <div class="p-3 absolute top-0 left-0 z-20 select-none w-1/2">
-        <p class="text-2xl font-bold">plate-calculator</p>
+        <p class="text-lg lg:text-2xl font-bold">plate-calculator</p>
         <p class="italic hidden lg:block">
             Calculator for minimum amount of weight plates needed to get any
             value in a given range and precision
