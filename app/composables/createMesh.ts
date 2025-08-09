@@ -22,7 +22,10 @@ export function createPlateMesh(plate: PlateObject): THREE.Mesh {
     // Extrudes that ring into 3D
     const extrudeSettings: THREE.ExtrudeGeometryOptions = {
         depth: height,
-        bevelEnabled: false,
+        bevelEnabled: true,
+        bevelThickness: height * 0.04,  // 2% of the plate height
+        bevelSize: outerRadius * 0.02,  // 1% of the outer radius
+        bevelSegments: 1,               // Smooth bevel with 3 segments
         steps: 1,
     }
     const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings)

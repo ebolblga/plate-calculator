@@ -53,7 +53,7 @@ useHead({
 })
 </script>
 <template>
-    <div class="m-0 bg-background text-text">
+    <div class="m-0 bg-background text-text text-xs lg:text-sm">
         <slot />
     </div>
 </template>

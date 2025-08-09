@@ -4,12 +4,7 @@ import { resolve } from 'path'
 export default defineNuxtConfig({
     compatibilityDate: '2025-07-15',
     devtools: { enabled: false },
-    modules: [
-        '@nuxtjs/tailwindcss',
-        '@vueuse/nuxt',
-        '@nuxtjs/robots',
-        '@nuxtjs/sitemap'
-    ],
+    modules: ['@nuxtjs/tailwindcss', '@vueuse/nuxt', '@nuxtjs/robots', '@nuxtjs/sitemap', '@nuxt/icon'],
     tailwindcss: {
         cssPath: ['~/assets/css/tailwind.css', { injectPosition: 'first' }],
         configPath: 'tailwind.config',
