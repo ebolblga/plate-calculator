@@ -159,9 +159,10 @@ function exportJson() {
                     id="precision" />
             </client-only>
         </section>
-        <section class="w-full mt-6">
+        <section class="w-full mt-6 flex justify-center">
             <BaseButton @click="exportJson">
-                Download JSON with dimensions
+                <Icon name="mdi:code-json" size="16" />
+                Download JSON
             </BaseButton>
         </section>
         <section class="mt-4">
