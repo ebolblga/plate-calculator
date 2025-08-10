@@ -224,6 +224,7 @@ function exportJson() {
 }
 </script>
 <template>
+    <BaseGitIcon />
     <TheBackgroundScene :result="result" />
     <div class="p-3 absolute top-0 left-0 z-20 select-none w-1/2">
         <p class="text-lg lg:text-2xl font-bold">plate-calculator</p>
