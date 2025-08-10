@@ -1,7 +1,8 @@
 // Greedy Subset-Sum Cover algorithm
 export function getCoverDenoms(targetNum: number): number[] {
     if (targetNum < 0 || !Number.isInteger(targetNum)) {
-        throw new Error('target must be a non-negative integer')
+        // throw new Error(`target must be a non-negative integer: ${targetNum}`)
+        return []
     }
 
     const denominations: number[] = []
@@ -27,7 +28,8 @@ export function getCoverDenoms(targetNum: number): number[] {
 // Binary heuristic
 export function getBinaryDenoms(targetNum: number): number[] {
     if (targetNum < 0 || !Number.isInteger(targetNum)) {
-        throw new Error('target must be a non-negative integer')
+        // throw new Error(`target must be a non-negative integer: ${targetNum}`)
+        return []
     }
 
     const denominations: number[] = []
