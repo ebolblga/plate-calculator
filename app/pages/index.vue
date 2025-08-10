@@ -198,6 +198,7 @@ function findPlateDenoms(): void {
     result.value = {
         unitOfWeight: 'kg',
         unitOfLength: 'm',
+        unitOfVolume: 'kg/m^3',
         numPlates: plateDenominations.length * 2,
         totalWeight:
             plateDenominations.reduce(

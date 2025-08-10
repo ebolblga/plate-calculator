@@ -1,14 +1,15 @@
 import type { PlateObject } from '@types'
+import {
+    DENSITY,
+    INNER_DIAMETER,
+    STANDARD_OD,
+    MIN_HEIGHT,
+    MIN_OD,
+    MAX_OD,
+} from '@constants'
 
 // TODO: rewrite this
 export function genPlateObjects(plateDenoms: number[]): PlateObject[] {
-    const DENSITY = 2400 // kg/m^3
-    const INNER_DIAMETER = 0.0504 // m
-    const STANDARD_OD = 0.45 // m
-    const MIN_HEIGHT = 0.02 // m
-    const MIN_OD = 0.15 // m
-    const MAX_OD = 0.5 // m
-
     const r = INNER_DIAMETER / 2
 
     return plateDenoms.map((weight, id) => {
@@ -46,6 +47,7 @@ export function genPlateObjects(plateDenoms: number[]): PlateObject[] {
         return {
             id,
             weight,
+            density: DENSITY,
             innerDiameter: parseFloat(INNER_DIAMETER.toFixed(4)),
             outerDiameter: parseFloat(od.toFixed(4)),
             height: parseFloat(h.toFixed(4)),

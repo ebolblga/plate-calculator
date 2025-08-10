@@ -1,6 +1,7 @@
 export interface PlateObject {
     id: number
     weight: number
+    density: number
     innerDiameter: number
     outerDiameter: number
     height: number
@@ -9,7 +10,8 @@ export interface PlateObject {
 // TODO: add lb/inch support
 export interface Result {
     unitOfWeight: 'kg' | 'lb'
-    unitOfLength: 'm' | 'inch'
+    unitOfLength: 'm' | 'ft'
+    unitOfVolume: 'kg/m^3' | 'lb/ft^3'
     numPlates: number
     totalWeight: number
     totalHeight: number
