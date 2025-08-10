@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { genPlateObjects } from '~/composables/generatePlates'
-import { getBinaryDenoms, getCoverDenoms } from '~/composables/searchAlgorithm'
+import {
+    getCoverDenoms,
+    getBinaryDenoms,
+    getLinearDenoms,
+} from '~/composables/searchAlgorithm'
 import { useLocalStorage, useDebounceFn } from '@vueuse/core'
 import { type Result, AlgoOptions } from '@types'
 
@@ -162,10 +166,27 @@ function findPlateDenoms(): void {
         (maxWeight.value - minWeight.value) / (unit * 2)
     )
 
-    const denomsUnits: number[] =
-        selectedAlgo.value === AlgoOptions.binaryHeuristic
-            ? getBinaryDenoms(targetNum)
-            : getCoverDenoms(targetNum)
+    let denomsUnits: number[] = []
+
+    switch (selectedAlgo.value) {
+        case AlgoOptions.greedyCover: {
+            denomsUnits = getCoverDenoms(targetNum)
+            break
+        }
+
+        case AlgoOptions.binaryHeuristic: {
+            denomsUnits = getBinaryDenoms(targetNum)
+            break
+        }
+
+        case AlgoOptions.linear: {
+            denomsUnits = getLinearDenoms(targetNum)
+            break
+        }
+
+        default:
+            denomsUnits = getCoverDenoms(targetNum)
+    }
 
     const plateDenominations: number[] = denomsUnits
         .map((u: number) => u * unit)
@@ -233,6 +254,15 @@ function exportJson() {
                             v-model="selectedAlgo"
                             class="w-4 h-4 bg-background accent-primary" />
                         {{ AlgoOptions.binaryHeuristic }}
+                    </label>
+                    <label
+                        class="flex items-center gap-2 cursor-pointer hover:bg-background/20 rounded p-1 transition-colors">
+                        <input
+                            type="radio"
+                            :value="AlgoOptions.linear"
+                            v-model="selectedAlgo"
+                            class="w-4 h-4 bg-background accent-primary" />
+                        {{ AlgoOptions.linear }}
                     </label>
                 </div>
             </div>
@@ -304,8 +334,8 @@ function exportJson() {
                         <div class="text-xs mb-1">Denominations:</div>
                         <div class="flex flex-wrap gap-1">
                             <span
-                                v-for="denom in plateDenoms"
-                                :key="denom"
+                                v-for="(denom, i) in plateDenoms"
+                                :key="`${denom}-${i}`"
                                 class="bg-primary/20 text-primary px-1.5 py-0.5 rounded text-xs font-mono border border-primary/30">
                                 2x{{ denom }}kg
                             </span>

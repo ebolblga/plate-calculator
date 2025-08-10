@@ -17,6 +17,7 @@ export interface Result {
 }
 
 export enum AlgoOptions {
-    greedyCover = 'Greedy subset-sum cover algorithm',
-    binaryHeuristic = 'Binary heuristic',
+    greedyCover = 'Greedy Subset-Sum Cover Algorithm',
+    binaryHeuristic = 'Binary Heuristic',
+    linear = 'Linear Increment Coverage',
 }
