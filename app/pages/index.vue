@@ -280,7 +280,7 @@ function exportJson() {
                         id="min-weight" />
                     <BaseSlider
                         v-model="maxWeight"
-                        :min="1"
+                        :min="0"
                         :max="1000"
                         :step="1"
                         label="Max weight, kg:"
