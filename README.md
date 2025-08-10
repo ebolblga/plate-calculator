@@ -179,7 +179,6 @@ For that I used [Tree.js](https://threejs.org/) - JavaScript-based WebGL engine.
 - and then some controls and post processing like bloom
 
 ## Setup with [Node.js](https://nodejs.org/en/)
-If you want to try changing the mapping
 ```bash
 # ------------------------------------------
 # Prerequisites

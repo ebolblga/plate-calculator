@@ -41,7 +41,8 @@ function startEditing() {
 
 function finishEditing() {
     // Clamp to min/max before emitting
-    const clamped = Math.min(max, Math.max(min, internalValue.value))
+    // const clamped = Math.min(max, Math.max(min, internalValue.value))
+    const clamped = Math.max(min, internalValue.value)
     internalValue.value = clamped
     emitValue()
     editing.value = false
