@@ -79,7 +79,7 @@ function initPostProcessing() {
         new THREE.Vector2(window.innerWidth, window.innerHeight),
         0.5,
         0.4,
-        0.6
+        0.5
     )
     composer.addPass(bloom)
 }

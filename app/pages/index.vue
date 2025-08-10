@@ -31,13 +31,96 @@ useHead({
 })
 
 const minWeight = useLocalStorage<number>('min-weight', 20)
-const maxWeight = useLocalStorage<number>('max-weight', 140)
-const precision = useLocalStorage<number>('precision', 1)
+const maxWeight = useLocalStorage<number>('max-weight', 178.75)
+const precision = useLocalStorage<number>('precision', 1.25)
 const plateDenoms = ref<number[]>([])
 const result = useLocalStorage<Result>('result', {} as Result)
-const selectedAlgo = useLocalStorage('selected-algo', AlgoOptions.greedyCover)
+const selectedAlgo = useLocalStorage<AlgoOptions>(
+    'selected-algo',
+    AlgoOptions.greedyCover
+)
+
+const route = useRoute()
+const router = useRouter()
+let updatingQuery = false // a flag to avoid echo/loop when we programmatically replace the route/query
+
+function algoKeyFromValue(v: AlgoOptions) {
+    const found = Object.entries(AlgoOptions).find(([, val]) => val === v)
+    return found?.[0] ?? 'greedyCover'
+}
+
+function algoValueFromKey(
+    key: string | null | undefined
+): AlgoOptions | undefined {
+    if (!key) return undefined
+    return (AlgoOptions as any)[key] as AlgoOptions | undefined
+}
+
+// Query has higher priority than localStorage — this is called once on load and also when route.query changes
+function applyQueryToState(q: Record<string, any>) {
+    if (q.min !== undefined) {
+        const n = Number(q.min)
+        if (!Number.isNaN(n)) minWeight.value = n
+    }
+    if (q.max !== undefined) {
+        const n = Number(q.max)
+        if (!Number.isNaN(n)) maxWeight.value = n
+    }
+    if (q.prec !== undefined) {
+        const n = Number(q.prec)
+        if (!Number.isNaN(n)) precision.value = n
+    }
+    if (q.algo !== undefined) {
+        const maybeAlgo = algoValueFromKey(String(q.algo))
+        if (maybeAlgo) selectedAlgo.value = maybeAlgo
+    }
+}
+
+watch(
+    [minWeight, maxWeight, precision, selectedAlgo],
+    ([min, max, prec, algo]) => {
+        if (updatingQuery) return
+        const algoKey = algoKeyFromValue(unref(algo))
+
+        // Build the new query object. Convert numbers/enum->key to strings for URL.
+        const newQuery = {
+            ...Object.fromEntries(Object.entries(route.query)), // keep any other query params
+            min: String(unref(min)),
+            max: String(unref(max)),
+            prec: String(unref(prec)),
+            algo: algoKey,
+        }
+
+        // Avoid unnecessary router.replace if query is already identical
+        const same =
+            String(route.query.min ?? '') === newQuery.min &&
+            String(route.query.max ?? '') === newQuery.max &&
+            String(route.query.prec ?? '') === newQuery.prec &&
+            String(route.query.algo ?? '') === newQuery.algo
+
+        if (!same) {
+            updatingQuery = true
+            // replace so we don't create history entries for each small change
+            router.replace({ query: newQuery }).finally(() => {
+                updatingQuery = false
+            })
+        }
+    },
+    { deep: true }
+)
+
+// Watch route.query so back/forward or external link changes get applied to state.
+watch(
+    () => route.query,
+    (q) => {
+        if (updatingQuery) return
+        applyQueryToState(q as Record<string, any>)
+    },
+    { immediate: false, deep: true }
+)
 
 onMounted(() => {
+    applyQueryToState(route.query as Record<string, any>)
     findPlateDenoms()
 })
 
